@@ -1,10 +1,35 @@
 /*global value*/
 let map;
-let userLocation = {lat: 40.766959,lng: -73.985181};
+let userLocation = {
+    lat: 40.766959,
+    lng: -73.985181
+};
 let initLoc = [];
 let markers = [];
 let currentMarker = [];
 let largeInfowindow;
+
+//Four square的token
+let token = 'BPIKMWGI3N3RG1WAQFZVK2MBI0FVHETJFMEJO3EGP1UUFTVQ';
+
+
+/*这个本来是打算获取用户位置，然后显示用户周边的餐馆信息的。但是我发现有一点异步问题要处理，就是要保证
+获取这个信息之后再执行谷歌地图的回调函数initMap，不然先执行initMap的话哪个userLocation是空的会报错，这边不太清楚具体该怎么处理....
+*/
+//function getUserLocation() {
+//    //这个函数的作用是获取用户的位置
+//    if ('gelocation' in navigator) {
+//        navigator.geolocation.getCurrentPosition(goSuccess);
+//    } else {
+//        
+//    }
+//    
+//    function goSuccess(position) {
+//        userLocation.lat = position.coords.latitude;
+//        userLocation.lng = position.coords.longitude;
+//    }
+//}
+
 
 /*这个函数的作用是初始化加载地图*/
 function initMap() {
@@ -12,110 +37,151 @@ function initMap() {
     //设置地图样式
     let styles = [
         {
-            featureType: 'water',
-            stylers: [
+            "featureType": "landscape",
+            "elementType": "geometry",
+            "stylers": [
                 {
-                    color: '#19a0d8'
-                }
-            ]
-          }, {
-            featureType: 'administrative',
-            elementType: 'labels.text.stroke',
-            stylers: [
+                    "saturation": "-100"
+            }
+        ]
+    },
+        {
+            "featureType": "poi",
+            "elementType": "labels",
+            "stylers": [
                 {
-                    color: '#ffffff'
-                },
+                    "visibility": "off"
+            }
+        ]
+    },
+        {
+            "featureType": "poi",
+            "elementType": "labels.text.stroke",
+            "stylers": [
                 {
-                    weight: 6
-                }
-            ]
-          }, {
-            featureType: 'administrative',
-            elementType: 'labels.text.fill',
-            stylers: [
+                    "visibility": "off"
+            }
+        ]
+    },
+        {
+            "featureType": "road",
+            "elementType": "labels.text",
+            "stylers": [
                 {
-                    color: '#e85113'
-                }
-            ]
-          }, {
-            featureType: 'road.highway',
-            elementType: 'geometry.stroke',
-            stylers: [
+                    "color": "#545454"
+            }
+        ]
+    },
+        {
+            "featureType": "road",
+            "elementType": "labels.text.stroke",
+            "stylers": [
                 {
-                    color: '#efe9e4'
-                },
+                    "visibility": "off"
+            }
+        ]
+    },
+        {
+            "featureType": "road.highway",
+            "elementType": "geometry.fill",
+            "stylers": [
                 {
-                    lightness: -40
-                }
-            ]
-          }, {
-            featureType: 'transit.station',
-            stylers: [
+                    "saturation": "-87"
+            },
                 {
-                    weight: 9
-                },
+                    "lightness": "-40"
+            },
                 {
-                    hue: '#e85113'
-                }
-            ]
-          }, {
-            featureType: 'road.highway',
-            elementType: 'labels.icon',
-            stylers: [
+                    "color": "#ffffff"
+            }
+        ]
+    },
+        {
+            "featureType": "road.highway",
+            "elementType": "geometry.stroke",
+            "stylers": [
                 {
-                    visibility: 'off'
-                }
-            ]
-          }, {
-            featureType: 'water',
-            elementType: 'labels.text.stroke',
-            stylers: [
+                    "visibility": "off"
+            }
+        ]
+    },
+        {
+            "featureType": "road.highway.controlled_access",
+            "elementType": "geometry.fill",
+            "stylers": [
                 {
-                    lightness: 100
-                }
-            ]
-          }, {
-            featureType: 'water',
-            elementType: 'labels.text.fill',
-            stylers: [
+                    "color": "#f0f0f0"
+            },
                 {
-                    lightness: -100
-                }
-            ]
-          }, {
-            featureType: 'poi',
-            elementType: 'geometry',
-            stylers: [
+                    "saturation": "-22"
+            },
                 {
-                    visibility: 'on'
-                },
+                    "lightness": "-16"
+            }
+        ]
+    },
+        {
+            "featureType": "road.highway.controlled_access",
+            "elementType": "geometry.stroke",
+            "stylers": [
                 {
-                    color: '#f0e4d3'
-                }
-            ]
-          }, {
-            featureType: 'road.highway',
-            elementType: 'geometry.fill',
-            stylers: [
+                    "visibility": "off"
+            }
+        ]
+    },
+        {
+            "featureType": "road.highway.controlled_access",
+            "elementType": "labels.icon",
+            "stylers": [
                 {
-                    color: '#efe9e4'
-                },
+                    "visibility": "on"
+            }
+        ]
+    },
+        {
+            "featureType": "road.arterial",
+            "elementType": "geometry.stroke",
+            "stylers": [
                 {
-                    lightness: -25
-                }
-            ]
-          }
-        ];
-    largeInfowindow =  new google.maps.InfoWindow();
+                    "visibility": "off"
+            }
+        ]
+    },
+        {
+            "featureType": "road.local",
+            "elementType": "geometry.stroke",
+            "stylers": [
+                {
+                    "visibility": "off"
+            }
+        ]
+    },
+        {
+            "featureType": "water",
+            "elementType": "geometry.fill",
+            "stylers": [
+                {
+                    "saturation": "-52"
+            },
+                {
+                    "hue": "#00e4ff"
+            },
+                {
+                    "lightness": "-16"
+            }
+        ]
+    }
+];
+    largeInfowindow = new google.maps.InfoWindow();
     /*创建map对象*/
     map = new google.maps.Map(document.getElementById('map'), {
         center: userLocation,
         zoom: 18,
         styles: styles
     });
-    
+
     let location = '40.766959, -73.985181';
-    
+
     // 第三方API为foursquare，官方文档地址: https://developer.foursquare.com/docs
     // 采用jquery的AJAX获取数据
     let getNearbyPlace = $.ajax({
@@ -123,29 +189,41 @@ function initMap() {
         method: 'GET',
         data: {
             ll: location,
-            oauth_token: 'BPIKMWGI3N3RG1WAQFZVK2MBI0FVHETJFMEJO3EGP1UUFTVQ',
+            oauth_token: token,
             v: '20180311',
             radius: '500'
         }
     })
-    
-    //返回成功
-    getNearbyPlace.done(function(data){
-        for (let eachPlace of data.response.venues) {
-            /*将该地点mark出来*/
-            createMarkerInfoWindow(eachPlace, largeInfowindow);
-            initLoc.push(eachPlace);
+
+    //有返回值
+    getNearbyPlace.done(function (data) {
+        // 返回状态等于200时
+        if (data.meta.code == 200) {
+            for (let eachPlace of data.response.venues) {
+                /*将该地点mark出来*/
+                createMarkerInfoWindow(eachPlace, largeInfowindow);
+                initLoc.push(eachPlace);
+            }
+            //加入一个点的时候调整地图的试图
+            fitMap();
+            //使用knockout绑定DOM对象
+            ko.applyBindings(new viewModel());
+        } else {
+            //返回状态失败的时候提示
+            sweetNote('Foursquare');
         }
-        
-        fitMap();
-        //使用knockout绑定DOM对象
-        ko.applyBindings(new viewModel());
     });
-    
-            
-    function fitMap(){
+
+    //返回失败
+    getNearbyPlace.fail(function (error) {
+        //提示错误
+        sweetNote('Foursquare');
+    });
+
+    //增加mark到地图的时候扩展用户的视图
+    function fitMap() {
         let bounds = new google.maps.LatLngBounds();
-        
+
         for (let eachMark of markers) {
             eachMark.setMap(map);
             bounds.extend(eachMark.position);
@@ -154,20 +232,34 @@ function initMap() {
     }
 }
 
+//提示错误的函数
+function sweetNote(source) {
+    swal({
+        type: 'error',
+        title: 'Oops',
+        text: `Sorry, cannot get the data from the ${source}!`
+    })
+}
+
+
 /*创建Marker和InfoWindow的函数*/
 function createMarkerInfoWindow(place, infowindow) {
 
-    let defaultIcon = makeMarkerIcon('0091ff');
+    let defaultIcon = makeMarkerIcon('ed5a5a');
     let highlightedIcon = makeMarkerIcon('FFFF24');
 
-    let location = {lat: place.location.lat, lng: place.location.lng};
-    
+    let location = {
+        lat: place.location.lat,
+        lng: place.location.lng
+    };
+
     /*new marker object*/
     let marker = new google.maps.Marker({
         map: map,
         title: place.name,
         animation: google.maps.Animation.DROP,
-        position: location
+        position: location,
+        id: place.id
     });
 
     markers.push(marker);
@@ -175,6 +267,8 @@ function createMarkerInfoWindow(place, infowindow) {
     marker.addListener('click', function () {
         populateInfoWindow(this, largeInfowindow)
     });
+
+    marker.setIcon(defaultIcon);
 
     //滑动鼠标marker时候显示的效果
     marker.addListener('mouseover', function () {
@@ -185,21 +279,20 @@ function createMarkerInfoWindow(place, infowindow) {
     marker.addListener('mouseout', function () {
         this.setIcon(defaultIcon);
     });
-
-
-    //创建Marker标志的函数
-    function makeMarkerIcon(markerColor) {
-        let markerImage = new google.maps.MarkerImage(
-            'http://chart.googleapis.com/chart?chst=d_map_spin&chld=1.15|0|' + markerColor + '|40|_|%E2%80%A2',
-            new google.maps.Size(21, 34),
-            new google.maps.Point(0, 0),
-            new google.maps.Point(10, 34),
-            new google.maps.Size(21, 34)
-        );
-        return markerImage;
-    }
 }
 
+
+//创建Marker标志的函数
+function makeMarkerIcon(markerColor) {
+    let markerImage = new google.maps.MarkerImage(
+        'http://chart.googleapis.com/chart?chst=d_map_spin&chld=1.15|0|' + markerColor + '|40|_|%E2%80%A2',
+        new google.maps.Size(21, 34),
+        new google.maps.Point(0, 0),
+        new google.maps.Point(10, 34),
+        new google.maps.Size(21, 34)
+    );
+    return markerImage;
+}
 
 //弹出infowindow
 function populateInfoWindow(marker, infowindow) {
@@ -211,33 +304,73 @@ function populateInfoWindow(marker, infowindow) {
         infowindow.addListener('closeclick', function () {
             infowindow.marker = null;
         });
+
         let radius = 10;
         let streetViewService = new google.maps.StreetViewService();
+        let getPhoto, panoramaOptions;
 
-        
-        //获取街景的函数
+        //获取街景的回掉函数
         function getStreetView(data, status) {
+
+            //先通过AJAX请求Foursquare的API地点图片
+            getPhoto = $.ajax({
+                url: `https://api.foursquare.com/v2/venues/${marker.id}/photos`,
+                method: 'GET',
+                data: {
+                    oauth_token: token,
+                    v: '20180311'
+                }
+            })
+
+            // 如果google街景状态响应正常
             if (status == google.maps.StreetViewStatus.OK) {
-                var nearStreetViewLocation = data.location.latLng;
-                var heading = google.maps.geometry.spherical.computeHeading(nearStreetViewLocation, marker.position);
-                infowindow.setContent('<div>' + marker.title + '</div><div id="pano"></div>');
-                var panoramaOptions = {
+                let nearStreetViewLocation = data.location.latLng;
+                let heading = google.maps.geometry.spherical.computeHeading(nearStreetViewLocation, marker.position);
+                infowindow.setContent(`<div class="marker-title">${marker.title}</div><div id="pano"></div>`);
+                panoramaOptions = {
                     position: nearStreetViewLocation,
                     pov: {
                         heading: heading,
                         pitch: 30
                     }
                 };
-                var panorama = new google.maps.StreetViewPanorama(document.getElementById('pano'), panoramaOptions);
+
             } else {
-                infowindow.setContent('<div>' + marker.title + '</div>' + '<div>No Street View Found</div>');
+                infowindow.setContent(`<div class="marker-title">${marker.title}</div><div class="not-found">No StreetView Found!</div>`);
             }
+
+            getPhoto.done(function (data) {
+                //返回正常
+                if (data.meta.code == 200) {
+                    if (data.response.photos.count > 0) {
+
+                        let prefix = data.response.photos.items["0"].prefix;
+                        let size = data.response.photos.items["0"].width + 'x' + data.response.photos.items["0"].height;
+                        let suffix = data.response.photos.items["0"].suffix;
+                        let url = prefix + size + suffix;
+
+                        infowindow.setContent(`<div class="infowindow">` + infowindow.content + `<div class="info-img"><img src=${url}></div></div>`);
+
+                        let panorama = new google.maps.StreetViewPanorama(document.getElementById('pano'), panoramaOptions);
+
+                    } else {
+
+                        infowindow.setContent(`<div class="infowindow">` + infowindow.content + `<div class="info-no-img">Image Not found</div></div>`);
+                        let panorama = new google.maps.StreetViewPanorama(document.getElementById('pano'), panoramaOptions);
+                    }
+
+                } else {
+                    infowindow.setContent(`<div class="infowindow">` + infowindow.content + `<div class="info-no-img">Image Not found</div></div>`);
+                    let panorama = new google.maps.StreetViewPanorama(document.getElementById('pano'), panoramaOptions);
+                }
+            })
         }
-        
+        //调取谷歌街景
         streetViewService.getPanoramaByLocation(marker.position, radius, getStreetView);
         infowindow.open(map, marker);
     }
 }
+
 
 
 /*MVVM结构*/
@@ -255,8 +388,8 @@ let viewModel = function () {
     this.placeList = ko.observableArray([]);
     //用户输入一开始默认为空字符串
     this.keyword = ko.observable('');
-    
-    
+
+
     //动态绑定
     this.placeList = ko.computed(function () {
         //设置一个临时数组为空
@@ -272,7 +405,7 @@ let viewModel = function () {
         });
         return temp;
     });
-    
+
 
     //当用户输入的时候，筛选marker
     this.fliterLocation = function (data, event) {
@@ -287,17 +420,43 @@ let viewModel = function () {
             }
         }
     }
-    
+
     //绑定用户点击事件,弹出infowindow
     this.displayInfo = function (item, event) {
         let location = item.name();
         for (each in markers) {
             let lowerCase = markers[each].title.toLowerCase();
+
             //匹配用户输入,筛选marker
-            if (lowerCase  == location.toLowerCase()) {
+            if (lowerCase == location.toLowerCase()) {
                 populateInfoWindow(markers[each], largeInfowindow);
                 break;
-            } 
+            }
         }
+    }
+
+    this.highLight = function (item, event) {
+        let highlightedIcon = makeMarkerIcon('FFFF24');
+        let m;
+        for (each in markers) {
+            if (markers[each].title == item.name()) {
+                m = markers[each];
+                break;
+
+            }
+        }
+        m.setIcon(highlightedIcon);
+    }
+
+    this.fade = function (item, event) {
+        let defaultIcon = makeMarkerIcon('ed5a5a');
+        let m;
+        for (each in markers) {
+            if (markers[each].title == item.name()) {
+                m = markers[each];
+                break;
+            }
+        }
+        m.setIcon(defaultIcon);
     }
 }
