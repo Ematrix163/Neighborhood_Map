@@ -311,7 +311,9 @@ function populateInfoWindow(marker, infowindow) {
 
         //获取街景的回掉函数
         function getStreetView(data, status) {
-
+            
+            let flag = false;
+            
             //先通过AJAX请求Foursquare的API地点图片
             getPhoto = $.ajax({
                 url: `https://api.foursquare.com/v2/venues/${marker.id}/photos`,
@@ -324,6 +326,7 @@ function populateInfoWindow(marker, infowindow) {
 
             // 如果google街景状态响应正常
             if (status == google.maps.StreetViewStatus.OK) {
+                flag = true;
                 let nearStreetViewLocation = data.location.latLng;
                 let heading = google.maps.geometry.spherical.computeHeading(nearStreetViewLocation, marker.position);
                 infowindow.setContent(`<div class="marker-title">${marker.title}</div><div id="pano"></div>`);
@@ -339,7 +342,8 @@ function populateInfoWindow(marker, infowindow) {
                 infowindow.setContent(`<div class="marker-title">${marker.title}</div><div class="not-found">No StreetView Found!</div>`);
             }
 
-            getPhoto.done(function (data) {
+            getPhoto.done(function(data) {
+               
                 //返回正常
                 if (data.meta.code == 200) {
                     if (data.response.photos.count > 0) {
@@ -350,20 +354,32 @@ function populateInfoWindow(marker, infowindow) {
                         let url = prefix + size + suffix;
 
                         infowindow.setContent(`<div class="infowindow">` + infowindow.content + `<div class="info-img"><img src=${url}></div></div>`);
-
-                        let panorama = new google.maps.StreetViewPanorama(document.getElementById('pano'), panoramaOptions);
+                        
+                        if (flag) {
+                            let panorama = new google.maps.StreetViewPanorama(document.getElementById('pano'), panoramaOptions);
+                        }
+                        
 
                     } else {
 
                         infowindow.setContent(`<div class="infowindow">` + infowindow.content + `<div class="info-no-img">Image Not found</div></div>`);
-                        let panorama = new google.maps.StreetViewPanorama(document.getElementById('pano'), panoramaOptions);
+                        if (flag) {
+                            let panorama = new google.maps.StreetViewPanorama(document.getElementById('pano'), panoramaOptions);
+                        }
                     }
 
                 } else {
                     infowindow.setContent(`<div class="infowindow">` + infowindow.content + `<div class="info-no-img">Image Not found</div></div>`);
-                    let panorama = new google.maps.StreetViewPanorama(document.getElementById('pano'), panoramaOptions);
+                    if (flag) {
+                        let panorama = new google.maps.StreetViewPanorama(document.getElementById('pano'), panoramaOptions);
+                    }
                 }
             })
+            
+            getPhoto.fail(function(error){
+                //提示错误
+                sweetNote('Foursquare'); 
+            });
         }
         //调取谷歌街景
         streetViewService.getPanoramaByLocation(marker.position, radius, getStreetView);
@@ -459,4 +475,14 @@ let viewModel = function () {
         }
         m.setIcon(defaultIcon);
     }
+
+    // 处理点击按钮收缩侧边栏的
+    self.toggle = ko.observable('active');
+    self.isActive = ko.observable(false);
+    this.toggle = function(item, event){
+        self.isActive(!self.isActive());
+    }
+    this.toggleResult = ko.computed(function(){
+        return self.isActive() ? 'active' : '';
+    })
 }
